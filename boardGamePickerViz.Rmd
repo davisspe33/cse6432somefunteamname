@@ -1,0 +1,74 @@
+---
+title: "Board Game Picker"
+author: "Group 023"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: embed
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+
+library(dplyr)
+library(plotly)
+
+# load data
+wd <- getwd()
+dat <- read.csv(paste0(wd, "/data/final_data_with_clusters.csv"))
+#all_sim <- read.csv(paste0(wd, "/data/all_similarities.csv"))
+
+
+```
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+
+selectizeInput(inputId = "myGame", 
+               label = h3("Board Game Name"), 
+               choices = sort(unique(dat$Name)),
+               options = list(placeholder = "Type Game here",
+                              maxOptions = 2000)
+  )
+
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Bar Chart
+    
+```{r}
+
+filt_game <- reactive({input$myGame})
+
+renderPlotly({
+  
+  
+  f_name <- dat %>% dplyr::filter(Name %in% filt_game())
+  f_cluster <- f_name$final_cluster
+  
+  f_dat <- dat %>% 
+    dplyr::filter(final_cluster == f_cluster,
+                  Name != filt_game()) %>%
+    dplyr::arrange(AvgRating) %>% 
+    dplyr::slice(1:5)
+    
+  
+  plot_ly(f_dat, 
+          x = ~Name, 
+          y = ~AvgRating, 
+          type = 'bar', 
+          name = 'SF Zoo') %>% 
+  layout(xaxis = list(categoryorder = "total descending"))
+   
+
+})
+
+
+```
+

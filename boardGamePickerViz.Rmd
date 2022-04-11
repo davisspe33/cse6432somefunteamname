@@ -11,14 +11,16 @@ runtime: shiny
 
 ```{r global, include=FALSE}
 
+library(tidyr)
 library(dplyr)
 library(plotly)
 
 # load data
 wd <- getwd()
-dat <- read.csv(paste0(wd, "/data/final_data_with_clusters.csv"))
-#all_sim <- read.csv(paste0(wd, "/data/all_similarities.csv"))
+# dat <- read.csv(paste0(wd, "/data/final_data_with_clusters.csv"))
+all_sim <- read.csv(paste0(wd, "/data/all_similarities.csv"))
 
+data_long <- gather(all_sim, related_game, similarity_score, c(-Name,-X), factor_key=TRUE)
 
 ```
 
@@ -27,9 +29,17 @@ Inputs {.sidebar}
 
 ```{r}
 
+# selectizeInput(inputId = "myGame", 
+#                label = h3("Board Game Name"), 
+#                choices = sort(unique(dat$Name)),
+#                options = list(placeholder = "Type Game here",
+#                               maxOptions = 2000)
+#   )
+
 selectizeInput(inputId = "myGame", 
                label = h3("Board Game Name"), 
-               choices = sort(unique(dat$Name)),
+               choices = sort(unique(data_long$Name)),
+               selected = "Catan",
                options = list(placeholder = "Type Game here",
                               maxOptions = 2000)
   )
@@ -44,27 +54,50 @@ Row
     
 ```{r}
 
+# filt_game <- reactive({input$myGame})
+# 
+# renderPlotly({
+#   
+#   
+#   f_name <- dat %>% dplyr::filter(Name %in% filt_game())
+#   f_cluster <- f_name$final_cluster
+#   
+#   f_dat <- dat %>% 
+#     dplyr::filter(final_cluster == f_cluster,
+#                   Name != filt_game()) %>%
+#     dplyr::arrange(AvgRating) %>% 
+#     dplyr::slice(1:5)
+#     
+#   
+#   plot_ly(f_dat, 
+#           x = ~Name, 
+#           y = ~AvgRating, 
+#           type = 'bar', 
+#           name = 'Top 5 Related Games in Cluster by AvgRating') %>% 
+#   layout(xaxis = list(categoryorder = "total descending"))
+#    
+# 
+# })
+
 filt_game <- reactive({input$myGame})
 
 renderPlotly({
   
-  
-  f_name <- dat %>% dplyr::filter(Name %in% filt_game())
-  f_cluster <- f_name$final_cluster
-  
-  f_dat <- dat %>% 
-    dplyr::filter(final_cluster == f_cluster,
+  f_dat <- data_long %>% 
+    dplyr::filter(related_game == filt_game(),
                   Name != filt_game()) %>%
-    dplyr::arrange(AvgRating) %>% 
+    dplyr::arrange(desc(similarity_score)) %>% 
     dplyr::slice(1:5)
     
+
   
   plot_ly(f_dat, 
           x = ~Name, 
-          y = ~AvgRating, 
+          y = ~similarity_score,
+          color = ~similarity_score,
           type = 'bar', 
-          name = 'SF Zoo') %>% 
-  layout(xaxis = list(categoryorder = "total descending"))
+          name = 'Top 5 Most Similar Games') %>%
+    layout(xaxis = list(categoryorder = "total ascending"))
    
 
 })

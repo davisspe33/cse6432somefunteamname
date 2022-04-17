@@ -1,4 +1,6 @@
-pandas 
+pandas
 numpy
 matplotlib
 scikit-learn
+scipy
+time

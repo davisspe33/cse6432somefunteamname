@@ -14,6 +14,6 @@ R version 4.0.0 or greater is suggested to run the Rmarkdown (.Rmd) for the UI. 
 
 EXECUTION
 
-1. IF OUTPUT FOLDER NOT POPULATED: Run kmeans.ipynb notebook from end to end to populate the output folder. If output folder is populated move on to step 2
+1. IF OUTPUT FOLDER NOT POPULATED: Run final.ipynb notebook from end to end to populate the output folder. If output folder is populated move on to step 2
 
 2. Once the data is loaded into the data folder, KNIT (not run) the .Rmd script so it launches the flexdashboard. This will allow the user to interact with the data and select a game to see what the top 5 most similar games are based on similarity score.

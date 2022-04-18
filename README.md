@@ -7,6 +7,9 @@ This implementation uses a novel dual-layered k-means clustering model to genera
 
 The top five game recommendations by similarity score to the selected board game are visualized as a column chart with a color scale that eases interpretation. Users can repeatedly use the system to explore by re-entering a newly recommended game for five additional recommendations.
 
+DATA: 
+https://drive.google.com/drive/folders/1fNZPkollSPzyEYNRX8gCFHe6BVzqKLjE?usp=sharing
+
 INSTALLATION
 
 Refer to the requirements.txt for python packages required
